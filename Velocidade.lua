@@ -188,3 +188,72 @@ btnAuraESP.MouseButton1Click:Connect(function()
 		end)
 	end
 end)
+
+-- Frame para controle de velocidade
+local speedFrame = Instance.new("Frame")
+speedFrame.Name = "SpeedControl"
+speedFrame.Size = UDim2.new(0, 200, 0, 50)
+speedFrame.Position = UDim2.new(0, 10, 0, 250)
+speedFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+speedFrame.Parent = mainFrame
+Instance.new("UICorner", speedFrame).CornerRadius = UDim.new(0, 8)
+
+-- Texto da velocidade
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(0, 100, 1, 0)
+speedLabel.Position = UDim2.new(0, 50, 0, 0)
+speedLabel.Text = "Velocidade: 16"
+speedLabel.TextColor3 = Color3.new(1,1,1)
+speedLabel.BackgroundTransparency = 1
+speedLabel.TextScaled = true
+speedLabel.Font = Enum.Font.SourceSansBold
+speedLabel.Parent = speedFrame
+
+-- Botão de diminuir velocidade
+local menosBtn = Instance.new("TextButton")
+menosBtn.Size = UDim2.new(0, 40, 1, 0)
+menosBtn.Position = UDim2.new(0, 0, 0, 0)
+menosBtn.Text = "-"
+menosBtn.TextColor3 = Color3.new(1,1,1)
+menosBtn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+menosBtn.Font = Enum.Font.SourceSansBold
+menosBtn.TextScaled = true
+menosBtn.Parent = speedFrame
+Instance.new("UICorner", menosBtn).CornerRadius = UDim.new(0, 6)
+
+-- Botão de aumentar velocidade
+local maisBtn = Instance.new("TextButton")
+maisBtn.Size = UDim2.new(0, 40, 1, 0)
+maisBtn.Position = UDim2.new(0, 160, 0, 0)
+maisBtn.Text = "+"
+maisBtn.TextColor3 = Color3.new(1,1,1)
+maisBtn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+maisBtn.Font = Enum.Font.SourceSansBold
+maisBtn.TextScaled = true
+maisBtn.Parent = speedFrame
+Instance.new("UICorner", maisBtn).CornerRadius = UDim.new(0, 6)
+
+-- Variável de controle da velocidade
+local currentSpeed = 16
+local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+if humanoid then humanoid.WalkSpeed = currentSpeed end
+
+-- Funções de aumentar/diminuir
+menosBtn.MouseButton1Click:Connect(function()
+	currentSpeed = math.max(4, currentSpeed - 2)
+	if humanoid then humanoid.WalkSpeed = currentSpeed end
+	speedLabel.Text = "Velocidade: " .. tostring(currentSpeed)
+end)
+
+maisBtn.MouseButton1Click:Connect(function()
+	currentSpeed = math.min(200, currentSpeed + 2)
+	if humanoid then humanoid.WalkSpeed = currentSpeed end
+	speedLabel.Text = "Velocidade: " .. tostring(currentSpeed)
+end)
+
+-- Atualiza caso o personagem morra e respawne
+player.CharacterAdded:Connect(function(char)
+	repeat wait() until char:FindFirstChildOfClass("Humanoid")
+	humanoid = char:FindFirstChildOfClass("Humanoid")
+	humanoid.WalkSpeed = currentSpeed
+end)
