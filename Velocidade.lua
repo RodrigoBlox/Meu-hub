@@ -52,7 +52,7 @@ end)
 local scroll = Instance.new("ScrollingFrame", mainFrame)
 scroll.Size = UDim2.new(1, -20, 1, -40)
 scroll.Position = UDim2.new(0, 10, 0, 36)
-scroll.CanvasSize = UDim2.new(0, 0, 0, 300)
+scroll.CanvasSize = UDim2.new(0, 0, 0, 400)
 scroll.ScrollBarThickness = 6
 scroll.BackgroundTransparency = 1
 
