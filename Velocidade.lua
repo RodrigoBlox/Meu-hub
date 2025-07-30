@@ -294,3 +294,92 @@ btnNoclip.MouseButton1Click:Connect(function()
 		end
 	end
 end)
+
+-- Criar o painel do botão no seu scroll existente
+local scroll = -- coloque aqui sua referência do ScrollingFrame, por exemplo: script.Parent.ScrollingFrame
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local hitboxSize = 2
+
+-- Função para aplicar hitbox nos outros jogadores
+local function aplicarHitbox(tamanho)
+	for _, p in pairs(Players:GetPlayers()) do
+		if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+			local hrp = p.Character.HumanoidRootPart
+			hrp.Size = Vector3.new(tamanho, tamanho, tamanho)
+			hrp.Transparency = 0.5
+			hrp.Material = Enum.Material.ForceField
+			hrp.CanCollide = false
+		end
+	end
+end
+
+-- Container do painel
+local hitboxFrame = Instance.new("Frame")
+hitboxFrame.Size = UDim2.new(1, 0, 0, 100)
+hitboxFrame.BackgroundTransparency = 1
+hitboxFrame.Parent = scroll
+
+-- Botão de Aumentar Hitbox
+local plusBtn = Instance.new("TextButton")
+plusBtn.Text = "+"
+plusBtn.Size = UDim2.new(0, 40, 0, 40)
+plusBtn.Position = UDim2.new(0, 5, 0, 5)
+plusBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+plusBtn.TextColor3 = Color3.new(1, 1, 1)
+plusBtn.Font = Enum.Font.FredokaOne
+plusBtn.TextSize = 24
+plusBtn.Parent = hitboxFrame
+Instance.new("UICorner", plusBtn).CornerRadius = UDim.new(0, 8)
+
+-- Botão de Diminuir Hitbox
+local minusBtn = Instance.new("TextButton")
+minusBtn.Text = "-"
+minusBtn.Size = UDim2.new(0, 40, 0, 40)
+minusBtn.Position = UDim2.new(1, -45, 0, 5)
+minusBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+minusBtn.TextColor3 = Color3.new(1, 1, 1)
+minusBtn.Font = Enum.Font.FredokaOne
+minusBtn.TextSize = 24
+minusBtn.Parent = hitboxFrame
+Instance.new("UICorner", minusBtn).CornerRadius = UDim.new(0, 8)
+
+-- Título "Hitbox"
+local titleLbl = Instance.new("TextLabel")
+titleLbl.Text = "Hitbox"
+titleLbl.Size = UDim2.new(0, 100, 0, 40)
+titleLbl.Position = UDim2.new(0.5, -50, 0, 5)
+titleLbl.BackgroundTransparency = 1
+titleLbl.TextColor3 = Color3.new(1, 1, 1)
+titleLbl.Font = Enum.Font.FredokaOne
+titleLbl.TextSize = 22
+titleLbl.Parent = hitboxFrame
+
+-- Texto com o valor atual
+local valueLbl = Instance.new("TextLabel")
+valueLbl.Text = "Tamanho: " .. hitboxSize
+valueLbl.Size = UDim2.new(1, 0, 0, 25)
+valueLbl.Position = UDim2.new(0, 0, 1, -25)
+valueLbl.BackgroundTransparency = 1
+valueLbl.TextColor3 = Color3.new(1, 1, 1)
+valueLbl.Font = Enum.Font.FredokaOne
+valueLbl.TextSize = 18
+valueLbl.Parent = hitboxFrame
+
+-- Conexões dos botões
+plusBtn.MouseButton1Click:Connect(function()
+	hitboxSize += 1
+	valueLbl.Text = "Tamanho: " .. hitboxSize
+	aplicarHitbox(hitboxSize)
+end)
+
+minusBtn.MouseButton1Click:Connect(function()
+	hitboxSize = math.max(1, hitboxSize - 1)
+	valueLbl.Text = "Tamanho: " .. hitboxSize
+	aplicarHitbox(hitboxSize)
+end)
+
+-- Aplica a hitbox inicial
+aplicarHitbox(hitboxSize)
