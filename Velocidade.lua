@@ -226,31 +226,73 @@ btnDiminuir.MouseButton1Click:Connect(function()
 	labelSpeed.Text = "Velocidade: " .. speedAtual
 end)
 
--- Criar Tool
-local player = game.Players.LocalPlayer
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+-- Cria Tool
 local tool = Instance.new("Tool")
 tool.Name = "TpTool"
 tool.RequiresHandle = false
 tool.CanBeDropped = false
+tool.Parent = player:WaitForChild("Backpack")
 
--- Script que faz o teleporte ao clicar
+-- Criar GUI dentro do PlayerGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TpToolGUI"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 150, 0, 50)
+frame.Position = UDim2.new(0.5, -75, 0.9, 0)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+frame.Visible = false
+frame.Parent = screenGui
+
+local toggleBtn = Instance.new("TextButton")
+toggleBtn.Size = UDim2.new(1, 0, 1, 0)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+toggleBtn.TextColor3 = Color3.new(1, 1, 1)
+toggleBtn.Font = Enum.Font.FredokaOne
+toggleBtn.TextSize = 18
+toggleBtn.Text = "Ativar Teleporte"
+toggleBtn.Parent = frame
+
+local teleportAtivo = false
+
+-- Mostrar GUI só quando tool equipada
 tool.Equipped:Connect(function()
-    local mouse = player:GetMouse()
-    local conn
-    conn = mouse.Button1Down:Connect(function()
-        local char = player.Character
-        if char and char:FindFirstChild("HumanoidRootPart") then
-            local target = mouse.Hit.Position
-            char:MoveTo(target + Vector3.new(0, 3, 0)) -- levemente acima do solo
-        end
-    end)
-    
-    tool.Unequipped:Connect(function()
-        if conn then
-            conn:Disconnect()
+    frame.Visible = true
+end)
+
+tool.Unequipped:Connect(function()
+    frame.Visible = false
+    teleportAtivo = false
+    toggleBtn.Text = "Ativar Teleporte"
+end)
+
+-- Ativar/Desativar teleporte
+toggleBtn.MouseButton1Click:Connect(function()
+    teleportAtivo = not teleportAtivo
+    toggleBtn.Text = teleportAtivo and "Desativar Teleporte" or "Ativar Teleporte"
+end)
+
+-- Teleporte ao clicar na tela se ativado
+local clickConnection
+tool.Equipped:Connect(function()
+    if clickConnection then clickConnection:Disconnect() end
+    clickConnection = mouse.Button1Down:Connect(function()
+        if teleportAtivo then
+            local char = player.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                local pos = mouse.Hit.Position
+                char.HumanoidRootPart.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
+            end
         end
     end)
 end)
 
--- Colocar a Tool no Backpack do player
-tool.Parent = player:WaitForChild("Backpack")
+tool.Unequipped:Connect(function()
+    if clickConnection then clickConnection:Disconnect() end
+end)
