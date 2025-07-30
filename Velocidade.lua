@@ -226,35 +226,33 @@ btnDiminuir.MouseButton1Click:Connect(function()
 	labelSpeed.Text = "Velocidade: " .. speedAtual
 end)
 
-local teleportAtivo = false
-local clickConnection
+local btnTpTool = criarBotao("Receber Tp Tool", Color3.fromRGB(0, 200, 0))
 
-local btnTeleporte = criarBotao("Ativar Teleporte", Color3.fromRGB(100, 200, 100))
+btnTpTool.MouseButton1Click:Connect(function()
+	local tool = Instance.new("Tool")
+	tool.Name = "tptool"
+	tool.RequiresHandle = false
+	tool.CanBeDropped = false
 
-btnTeleporte.MouseButton1Click:Connect(function()
-    teleportAtivo = not teleportAtivo
-    btnTeleporte.Text = teleportAtivo and "Desativar Teleporte" or "Ativar Teleporte"
-    
-    if teleportAtivo then
-        clickConnection = mouse.Button1Down:Connect(function()
-            if teleportAtivo then
-                local char = player.Character
-                if char and char:FindFirstChild("HumanoidRootPart") then
-                    local pos = mouse.Hit.Position
-                    char.HumanoidRootPart.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
-                end
-                teleportAtivo = false
-                btnTeleporte.Text = "Ativar Teleporte"
-                if clickConnection then
-                    clickConnection:Disconnect()
-                    clickConnection = nil
-                end
-            end
-        end)
-    else
-        if clickConnection then
-            clickConnection:Disconnect()
-            clickConnection = nil
-        end
-    end
+	local equipped = false
+
+	tool.Equipped:Connect(function()
+		equipped = true
+	end)
+
+	tool.Unequipped:Connect(function()
+		equipped = false
+	end)
+
+	tool.Activated:Connect(function()
+		if equipped then
+			local mouse = player:GetMouse()
+			local pos = mouse.Hit.Position
+			if pos then
+				char:SetPrimaryPartCFrame(CFrame.new(pos + Vector3.new(0, 5, 0)))
+			end
+		end
+	end)
+
+	tool.Parent = player.Backpack
 end)
