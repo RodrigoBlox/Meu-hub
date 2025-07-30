@@ -225,3 +225,36 @@ btnDiminuir.MouseButton1Click:Connect(function()
 	humanoid.WalkSpeed = speedAtual
 	labelSpeed.Text = "Velocidade: " .. speedAtual
 end)
+
+local teleportAtivo = false
+local clickConnection
+
+local btnTeleporte = criarBotao("Ativar Teleporte", Color3.fromRGB(100, 200, 100))
+
+btnTeleporte.MouseButton1Click:Connect(function()
+    teleportAtivo = not teleportAtivo
+    btnTeleporte.Text = teleportAtivo and "Desativar Teleporte" or "Ativar Teleporte"
+    
+    if teleportAtivo then
+        clickConnection = mouse.Button1Down:Connect(function()
+            if teleportAtivo then
+                local char = player.Character
+                if char and char:FindFirstChild("HumanoidRootPart") then
+                    local pos = mouse.Hit.Position
+                    char.HumanoidRootPart.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
+                end
+                teleportAtivo = false
+                btnTeleporte.Text = "Ativar Teleporte"
+                if clickConnection then
+                    clickConnection:Disconnect()
+                    clickConnection = nil
+                end
+            end
+        end)
+    else
+        if clickConnection then
+            clickConnection:Disconnect()
+            clickConnection = nil
+        end
+    end
+end)
