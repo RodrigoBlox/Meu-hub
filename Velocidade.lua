@@ -188,3 +188,32 @@ btnAuraESP.MouseButton1Click:Connect(function()
 		end)
 	end
 end)
+
+-- Ajuste Dinâmico de WalkSpeed
+local speedAtual = humanoid.WalkSpeed
+
+-- Label do valor
+local labelSpeed = Instance.new("TextLabel")
+labelSpeed.Size = UDim2.new(1, 0, 0, 30)
+labelSpeed.BackgroundTransparency = 1
+labelSpeed.Text = "Velocidade: " .. speedAtual
+labelSpeed.TextColor3 = Color3.new(1, 1, 1)
+labelSpeed.Font = Enum.Font.FredokaOne
+labelSpeed.TextSize = 18
+labelSpeed.Parent = scroll
+
+-- Botão Aumentar
+local btnAumentar = criarBotao("Aumentar Velocidade")
+btnAumentar.MouseButton1Click:Connect(function()
+	speedAtual += 2
+	humanoid.WalkSpeed = speedAtual
+	labelSpeed.Text = "Velocidade: " .. speedAtual
+end)
+
+-- Botão Diminuir
+local btnDiminuir = criarBotao("Diminuir Velocidade")
+btnDiminuir.MouseButton1Click:Connect(function()
+	speedAtual = math.max(4, speedAtual - 2)
+	humanoid.WalkSpeed = speedAtual
+	labelSpeed.Text = "Velocidade: " .. speedAtual
+end)
