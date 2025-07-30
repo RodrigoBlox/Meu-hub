@@ -191,7 +191,15 @@ end)
 
 -- Ajuste Dinâmico de WalkSpeed
 local speedAtual = humanoid.WalkSpeed
-
+local labelTitulo = Instance.new("TextLabel")
+labelTitulo.Size = UDim2.new(1, 0, 0, 30)
+labelTitulo.BackgroundTransparency = 1
+labelTitulo.Text = "Walkspeed"
+labelTitulo.TextColor3 = Color3.new(1, 1, 1)
+labelTitulo.Font = Enum.Font.FredokaOne
+labelTitulo.TextSize = 22
+labelTitulo.TextStrokeTransparency = 0.6
+labelTitulo.Parent = scroll -- ou onde você estiver organizando os botões
 -- Label do valor
 local labelSpeed = Instance.new("TextLabel")
 labelSpeed.Size = UDim2.new(1, 0, 0, 30)
