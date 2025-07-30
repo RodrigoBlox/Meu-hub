@@ -265,3 +265,32 @@ btnTrazer.MouseButton1Click:Connect(function()
         end
     end
 end)
+
+local noclipAtivo = false
+local conexaoNoclip = nil
+
+local btnNoclip = criarBotao("Atravessar Paredes", Color3.fromRGB(0, 200, 0)) -- Verde
+
+btnNoclip.MouseButton1Click:Connect(function()
+	noclipAtivo = not noclipAtivo
+	
+	if noclipAtivo then
+		btnNoclip.Text = "NoClip: Ativado"
+		conexaoNoclip = game:GetService("RunService").Stepped:Connect(function()
+			local char = game.Players.LocalPlayer.Character
+			if char then
+				for _, parte in pairs(char:GetDescendants()) do
+					if parte:IsA("BasePart") and parte.CanCollide == true then
+						parte.CanCollide = false
+					end
+				end
+			end
+		end)
+	else
+		btnNoclip.Text = "Atravessar Paredes"
+		if conexaoNoclip then
+			conexaoNoclip:Disconnect()
+			conexaoNoclip = nil
+		end
+	end
+end)
