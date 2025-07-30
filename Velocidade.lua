@@ -52,7 +52,7 @@ end)
 local scroll = Instance.new("ScrollingFrame", mainFrame)
 scroll.Size = UDim2.new(1, -20, 1, -40)
 scroll.Position = UDim2.new(0, 10, 0, 36)
-scroll.CanvasSize = UDim2.new(0, 0, 0, 400)
+scroll.CanvasSize = UDim2.new(0, 0, 0, 500)
 scroll.ScrollBarThickness = 6
 scroll.BackgroundTransparency = 1
 
@@ -145,7 +145,7 @@ local function adicionarAura(playerAlvo)
 	particle.Lifetime = NumberRange.new(1)
 	particle.Speed = NumberRange.new(0)
 	particle.Size = NumberSequence.new(3)
-	particle.Color = ColorSequence.new(Color3.fromRGB(0, 255, 0))
+	particle.Color = ColorSequence.new(Color3.fromRGB(0, 200, 0))
 	particle.LightEmission = 1
 	particle.Transparency = NumberSequence.new(0.3)
 	particle.Rotation = NumberRange.new(0, 360)
