@@ -73,28 +73,19 @@ local function criarBotao(nome, cor)
 	return btn
 end
 
--- Voo
-local btnVoo = criarBotao("Voo")
-local voando = false
-local bodyVel = Instance.new("BodyVelocity", char:WaitForChild("HumanoidRootPart"))
-bodyVel.MaxForce = Vector3.new()
-bodyVel.Velocity = Vector3.new()
+-- Função criarBotao (assumo que você já tem no seu script, como nos anteriores)
+-- Exemplo de uso no seu GUI:
+local btnFlyGui = criarBotao("Fly Gui", Color3.fromRGB(50, 200, 50)) -- Botão verde
 
-btnVoo.MouseButton1Click:Connect(function()
-	voando = not voando
-	bodyVel.MaxForce = voando and Vector3.new(99999, 99999, 99999) or Vector3.new()
-	btnVoo.Text = voando and "Desativar Voo" or "Voo"
-end)
+btnFlyGui.MouseButton1Click:Connect(function()
+    local url = "https://rawscripts.net/raw/Universal-Script-fly-gui-v3-46328"
+    local sucesso, resultado = pcall(function()
+        loadstring(game:HttpGet(url))()
+    end)
 
-RS.RenderStepped:Connect(function()
-	if voando then
-		local dir = Vector3.new()
-		if UIS:IsKeyDown(Enum.KeyCode.W) then dir += char.HumanoidRootPart.CFrame.LookVector end
-		if UIS:IsKeyDown(Enum.KeyCode.S) then dir -= char.HumanoidRootPart.CFrame.LookVector end
-		if UIS:IsKeyDown(Enum.KeyCode.A) then dir -= char.HumanoidRootPart.CFrame.RightVector end
-		if UIS:IsKeyDown(Enum.KeyCode.D) then dir += char.HumanoidRootPart.CFrame.RightVector end
-		bodyVel.Velocity = dir.Unit * 50
-	end
+    if not sucesso then
+        warn("Erro ao executar o Fly Gui: " .. tostring(resultado))
+    end
 end)
 
 -- Velocidade
