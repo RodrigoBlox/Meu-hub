@@ -138,45 +138,65 @@ btnPulo.MouseButton1Click:Connect(function()
 	btnPulo.AutoButtonColor = false
 end)
 
--- Aimbot + ESP
 local btnAimbot = criarBotao("Aimbot + ESP")
 local aimbotAtivo = false
+local aimbotConnection
 
 btnAimbot.MouseButton1Click:Connect(function()
 	aimbotAtivo = not aimbotAtivo
 	btnAimbot.Text = aimbotAtivo and "Desativar Aimbot" or "Aimbot + ESP"
 
-	if aimbotAtivo then
-		local connection
-		connection = RS.RenderStepped:Connect(function()
-			if not aimbotAtivo then connection:Disconnect() return end
-
+	if aimbotAtivo and not aimbotConnection then
+		aimbotConnection = RS.RenderStepped:Connect(function()
 			local closest = nil
 			local shortest = math.huge
-			for _, p in pairs(Players:GetPlayers()) do
+
+			for _, p in ipairs(Players:GetPlayers()) do
 				if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
 					local dist = (p.Character.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
 					if dist < shortest then
 						shortest = dist
 						closest = p
 					end
-					-- ESP verde
+
+					-- ESP Verde (atualiza mesmo se reiniciar)
 					if not p.Character:FindFirstChild("ESPBox") then
-						local box = Instance.new("BoxHandleAdornment", p.Character)
+						local box = Instance.new("BoxHandleAdornment")
 						box.Name = "ESPBox"
-						box.Adornee = p.Character:WaitForChild("HumanoidRootPart")
+						box.Adornee = p.Character.HumanoidRootPart
 						box.Size = Vector3.new(4, 5, 2)
 						box.Color3 = Color3.new(0, 1, 0)
 						box.AlwaysOnTop = true
 						box.ZIndex = 5
 						box.Transparency = 0.3
+						box.Parent = p.Character
 					end
 				end
 			end
 
+			-- Aimbot travar câmera no jogador mais próximo
 			if closest and closest.Character and closest.Character:FindFirstChild("Head") then
 				cam.CFrame = CFrame.new(cam.CFrame.Position, closest.Character.Head.Position)
 			end
 		end)
+	elseif not aimbotAtivo and aimbotConnection then
+		aimbotConnection:Disconnect()
+		aimbotConnection = nil
 	end
+end)
+
+-- Atualiza ESP para novos jogadores automaticamente
+Players.PlayerAdded:Connect(function(plr)
+	plr.CharacterAdded:Connect(function(char)
+		repeat wait() until char:FindFirstChild("HumanoidRootPart")
+		local box = Instance.new("BoxHandleAdornment")
+		box.Name = "ESPBox"
+		box.Adornee = char:FindFirstChild("HumanoidRootPart")
+		box.Size = Vector3.new(4, 5, 2)
+		box.Color3 = Color3.new(0, 1, 0)
+		box.AlwaysOnTop = true
+		box.ZIndex = 5
+		box.Transparency = 0.3
+		box.Parent = char
+	end)
 end)
