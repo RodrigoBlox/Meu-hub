@@ -225,3 +225,32 @@ btnDiminuir.MouseButton1Click:Connect(function()
 	humanoid.WalkSpeed = speedAtual
 	labelSpeed.Text = "Velocidade: " .. speedAtual
 end)
+
+-- Criar Tool
+local player = game.Players.LocalPlayer
+local tool = Instance.new("Tool")
+tool.Name = "TpTool"
+tool.RequiresHandle = false
+tool.CanBeDropped = false
+
+-- Script que faz o teleporte ao clicar
+tool.Equipped:Connect(function()
+    local mouse = player:GetMouse()
+    local conn
+    conn = mouse.Button1Down:Connect(function()
+        local char = player.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            local target = mouse.Hit.Position
+            char:MoveTo(target + Vector3.new(0, 3, 0)) -- levemente acima do solo
+        end
+    end)
+    
+    tool.Unequipped:Connect(function()
+        if conn then
+            conn:Disconnect()
+        end
+    end)
+end)
+
+-- Colocar a Tool no Backpack do player
+tool.Parent = player:WaitForChild("Backpack")
