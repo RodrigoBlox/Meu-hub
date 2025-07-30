@@ -247,3 +247,21 @@ btnTpTool.MouseButton1Click:Connect(function()
 
 	tool.Parent = player.Backpack
 end)
+
+-- Adiciona botão no seu GUI personalizado
+local btnTrazer = criarBotao("Trazer Todos", Color3.fromRGB(0, 200, 0)) -- Botão verde
+
+btnTrazer.MouseButton1Click:Connect(function()
+    local Players = game:GetService("Players")
+    local localPlayer = Players.LocalPlayer
+    local myChar = localPlayer.Character
+
+    if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then return end
+    local targetPos = myChar.HumanoidRootPart.Position + Vector3.new(0, 5, 0)
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(targetPos + Vector3.new(math.random(-5, 5), 0, math.random(-5, 5)))
+        end
+    end
+end)
