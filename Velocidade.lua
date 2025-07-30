@@ -138,65 +138,53 @@ btnPulo.MouseButton1Click:Connect(function()
 	btnPulo.AutoButtonColor = false
 end)
 
-local btnAimbot = criarBotao("Aimbot + ESP")
-local aimbotAtivo = false
-local aimbotConnection
+local btnAuraESP = criarBotao("Aura Verde ESP")
+local auraAtivo = false
 
-btnAimbot.MouseButton1Click:Connect(function()
-	aimbotAtivo = not aimbotAtivo
-	btnAimbot.Text = aimbotAtivo and "Desativar Aimbot" or "Aimbot + ESP"
+-- Função para criar Aura ESP
+local function adicionarAura(playerAlvo)
+	local hrp = playerAlvo.Character and playerAlvo.Character:FindFirstChild("HumanoidRootPart")
+	if not hrp then return end
+	if hrp:FindFirstChild("AuraESP") then return end -- Já existe
 
-	if aimbotAtivo and not aimbotConnection then
-		aimbotConnection = RS.RenderStepped:Connect(function()
-			local closest = nil
-			local shortest = math.huge
+	local particle = Instance.new("ParticleEmitter")
+	particle.Name = "AuraESP"
+	particle.Texture = "rbxassetid://243660364" -- textura suave circular
+	particle.Rate = 40
+	particle.Lifetime = NumberRange.new(1)
+	particle.Speed = NumberRange.new(0)
+	particle.Size = NumberSequence.new(3)
+	particle.Color = ColorSequence.new(Color3.fromRGB(0, 255, 0))
+	particle.LightEmission = 1
+	particle.Transparency = NumberSequence.new(0.3)
+	particle.Rotation = NumberRange.new(0, 360)
+	particle.RotSpeed = NumberRange.new(30)
+	particle.Parent = hrp
+end
 
-			for _, p in ipairs(Players:GetPlayers()) do
-				if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-					local dist = (p.Character.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
-					if dist < shortest then
-						shortest = dist
-						closest = p
-					end
-
-					-- ESP Verde (atualiza mesmo se reiniciar)
-					if not p.Character:FindFirstChild("ESPBox") then
-						local box = Instance.new("BoxHandleAdornment")
-						box.Name = "ESPBox"
-						box.Adornee = p.Character.HumanoidRootPart
-						box.Size = Vector3.new(4, 5, 2)
-						box.Color3 = Color3.new(0, 1, 0)
-						box.AlwaysOnTop = true
-						box.ZIndex = 5
-						box.Transparency = 0.3
-						box.Parent = p.Character
-					end
-				end
-			end
-
-			-- Aimbot travar câmera no jogador mais próximo
-			if closest and closest.Character and closest.Character:FindFirstChild("Head") then
-				cam.CFrame = CFrame.new(cam.CFrame.Position, closest.Character.Head.Position)
-			end
-		end)
-	elseif not aimbotAtivo and aimbotConnection then
-		aimbotConnection:Disconnect()
-		aimbotConnection = nil
+-- Atualiza para todos os jogadores
+local function aplicarAuraEmTodos()
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p ~= player and p.Character then
+			adicionarAura(p)
+		end
 	end
-end)
+end
 
--- Atualiza ESP para novos jogadores automaticamente
-Players.PlayerAdded:Connect(function(plr)
-	plr.CharacterAdded:Connect(function(char)
-		repeat wait() until char:FindFirstChild("HumanoidRootPart")
-		local box = Instance.new("BoxHandleAdornment")
-		box.Name = "ESPBox"
-		box.Adornee = char:FindFirstChild("HumanoidRootPart")
-		box.Size = Vector3.new(4, 5, 2)
-		box.Color3 = Color3.new(0, 1, 0)
-		box.AlwaysOnTop = true
-		box.ZIndex = 5
-		box.Transparency = 0.3
-		box.Parent = char
-	end)
+-- Ativa / desativa a Aura ESP
+btnAuraESP.MouseButton1Click:Connect(function()
+	auraAtivo = not auraAtivo
+	btnAuraESP.Text = auraAtivo and "Desativar Aura ESP" or "Aura Verde ESP"
+
+	if auraAtivo then
+		aplicarAuraEmTodos()
+
+		-- Adiciona aura quando alguém entrar
+		Players.PlayerAdded:Connect(function(plr)
+			plr.CharacterAdded:Connect(function()
+				repeat wait() until plr.Character:FindFirstChild("HumanoidRootPart")
+				adicionarAura(plr)
+			end)
+		end)
+	end
 end)
