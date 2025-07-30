@@ -155,3 +155,27 @@ btnSpeed.MouseButton1Click:Connect(function()
 	humanoid.WalkSpeed = usandoSpeed and speedRapido or speedNormal
 	btnSpeed.Text = usandoSpeed and "Velocidade Normal" or "Ativar Velocidade X2"
 end)
+-- CONTINUAÇÃO DO SCRIPT ANTERIOR
+-- Adicionando botão de reabrir via ImageButton
+
+-- Botão flutuante para reabrir a GUI
+local openButton = Instance.new("ImageButton")
+openButton.Parent = gui
+openButton.Size = UDim2.new(0, 40, 0, 40)
+openButton.Position = UDim2.new(0, 10, 0, 10)
+openButton.Image = "rbxassetid://100696306384924" -- ícone de engrenagem ⚙️
+openButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+openButton.Visible = false
+Instance.new("UICorner", openButton).CornerRadius = UDim.new(1, 0)
+
+-- Botão de fechar (agora ele esconde)
+closeBtn.MouseButton1Click:Connect(function()
+	mainFrame.Visible = false
+	openButton.Visible = true
+end)
+
+-- Clicar no ImageButton reabre a GUI
+openButton.MouseButton1Click:Connect(function()
+	mainFrame.Visible = true
+	openButton.Visible = false
+end)
