@@ -383,3 +383,246 @@ end)
 
 -- Aplica a hitbox inicial
 aplicarHitbox(hitboxSize)
+
+local btnHitbox = criarBotao("Abrir Hitbox GUI", Color3.fromRGB(0, 255, 100))
+
+loadstring([[
+-- Serviços
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local LocalPlayer = Players.LocalPlayer
+
+-- Variáveis
+local hitboxSize = 2
+local autoKillAll = false
+local autoClickerEnabled = false
+local fpsBoost = false
+
+-- GUI principal
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+ScreenGui.Name = "HitboxGui"
+
+-- Frame
+local MainFrame = Instance.new("Frame", ScreenGui)
+MainFrame.Size = UDim2.new(0, 240, 0, 260)
+MainFrame.Position = UDim2.new(0.5, -120, 0.4, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.Active = true
+MainFrame.Draggable = true
+Instance.new("UICorner", MainFrame)
+
+-- Título
+local Title = Instance.new("TextLabel", MainFrame)
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Text = "Hitbox"
+Title.Font = Enum.Font.FredokaOne
+Title.TextSize = 22
+Title.TextColor3 = Color3.new(1,1,1)
+Title.BackgroundTransparency = 1
+
+-- Valor da hitbox
+local ValueLabel = Instance.new("TextLabel", MainFrame)
+ValueLabel.Position = UDim2.new(0, 0, 0, 30)
+ValueLabel.Size = UDim2.new(1, 0, 0, 25)
+ValueLabel.Text = "Tamanho: " .. hitboxSize
+ValueLabel.Font = Enum.Font.FredokaOne
+ValueLabel.TextSize = 20
+ValueLabel.TextColor3 = Color3.new(1,1,1)
+ValueLabel.BackgroundTransparency = 1
+
+-- Botão +
+local PlusButton = Instance.new("TextButton", MainFrame)
+PlusButton.Position = UDim2.new(0, 10, 0, 60)
+PlusButton.Size = UDim2.new(0, 60, 0, 30)
+PlusButton.Text = "+"
+PlusButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+PlusButton.Font = Enum.Font.FredokaOne
+PlusButton.TextSize = 22
+PlusButton.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", PlusButton)
+
+-- Botão -
+local MinusButton = Instance.new("TextButton", MainFrame)
+MinusButton.Position = UDim2.new(0, 80, 0, 60)
+MinusButton.Size = UDim2.new(0, 60, 0, 30)
+MinusButton.Text = "-"
+MinusButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+MinusButton.Font = Enum.Font.FredokaOne
+MinusButton.TextSize = 22
+MinusButton.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", MinusButton)
+
+-- Botão Fechar
+local CloseButton = Instance.new("TextButton", MainFrame)
+CloseButton.Position = UDim2.new(1, -25, 0, 5)
+CloseButton.Size = UDim2.new(0, 20, 0, 20)
+CloseButton.Text = "X"
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
+CloseButton.Font = Enum.Font.FredokaOne
+CloseButton.TextSize = 16
+CloseButton.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", CloseButton)
+
+-- Botão Abrir
+local OpenButton = Instance.new("TextButton", ScreenGui)
+OpenButton.Size = UDim2.new(0, 100, 0, 30)
+OpenButton.Position = UDim2.new(0.5, -50, 0.9, 0)
+OpenButton.Text = "Abrir Hitbox"
+OpenButton.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
+OpenButton.Font = Enum.Font.FredokaOne
+OpenButton.TextSize = 18
+OpenButton.TextColor3 = Color3.new(1, 1, 1)
+OpenButton.Visible = false
+Instance.new("UICorner", OpenButton)
+
+-- Botão Auto Kill All
+local AutoKillButton = Instance.new("TextButton", MainFrame)
+AutoKillButton.Position = UDim2.new(0, 10, 0, 100)
+AutoKillButton.Size = UDim2.new(0, 210, 0, 30)
+AutoKillButton.Text = "Auto Kill All (OFF)"
+AutoKillButton.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+AutoKillButton.Font = Enum.Font.FredokaOne
+AutoKillButton.TextSize = 18
+AutoKillButton.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", AutoKillButton)
+
+-- Botão Auto Clicker
+local AutoClickerButton = Instance.new("TextButton", MainFrame)
+AutoClickerButton.Position = UDim2.new(0, 10, 0, 140)
+AutoClickerButton.Size = UDim2.new(0, 210, 0, 30)
+AutoClickerButton.Text = "Ativar Auto Clicker"
+AutoClickerButton.BackgroundColor3 = Color3.fromRGB(80, 160, 250)
+AutoClickerButton.Font = Enum.Font.FredokaOne
+AutoClickerButton.TextSize = 18
+AutoClickerButton.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", AutoClickerButton)
+
+-- Botão FPS Boost
+local FpsBoostButton = Instance.new("TextButton", MainFrame)
+FpsBoostButton.Position = UDim2.new(0, 10, 0, 180)
+FpsBoostButton.Size = UDim2.new(0, 210, 0, 30)
+FpsBoostButton.Text = "FPS Boost (OFF)"
+FpsBoostButton.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
+FpsBoostButton.Font = Enum.Font.FredokaOne
+FpsBoostButton.TextSize = 18
+FpsBoostButton.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", FpsBoostButton)
+
+-- Aplicar Hitbox
+local function aplicarHitbox(tamanho)
+	for _, p in pairs(Players:GetPlayers()) do
+		if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+			local hrp = p.Character.HumanoidRootPart
+			hrp.Size = Vector3.new(tamanho, tamanho, tamanho)
+			hrp.Transparency = fpsBoost and 1 or 0.5
+			hrp.Material = Enum.Material.ForceField
+			hrp.CanCollide = false
+		end
+	end
+end
+
+-- Noclip
+RunService.Stepped:Connect(function()
+	if autoKillAll and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+		for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+			if part:IsA("BasePart") then
+				part.CanCollide = false
+			end
+		end
+	end
+end)
+
+-- Auto Kill Loop
+task.spawn(function()
+	while true do
+		if autoKillAll then
+			for _, target in pairs(Players:GetPlayers()) do
+				if target ~= LocalPlayer and target.Character and target.Character:FindFirstChild("Humanoid") and target.Character:FindFirstChild("HumanoidRootPart") then
+					LocalPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame + Vector3.new(0, 2, 0)
+					task.wait(0.2)
+					target.Character.Humanoid.Health = 0
+				end
+			end
+		end
+		task.wait(2)
+	end
+end)
+
+-- Auto Clicker Loop
+task.spawn(function()
+	while true do
+		if autoClickerEnabled then
+			local mouseLocation = UserInputService:GetMouseLocation()
+			VirtualInputManager:SendMouseButtonEvent(mouseLocation.X, mouseLocation.Y, 0, true, game, 0)
+			wait(0.05)
+			VirtualInputManager:SendMouseButtonEvent(mouseLocation.X, mouseLocation.Y, 0, false, game, 0)
+		end
+		wait(1)
+	end
+end)
+
+-- Botão +
+PlusButton.MouseButton1Click:Connect(function()
+	hitboxSize += 1
+	ValueLabel.Text = "Tamanho: " .. hitboxSize
+	aplicarHitbox(hitboxSize)
+end)
+
+-- Botão -
+MinusButton.MouseButton1Click:Connect(function()
+	hitboxSize = math.max(1, hitboxSize - 1)
+	ValueLabel.Text = "Tamanho: " .. hitboxSize
+	aplicarHitbox(hitboxSize)
+end)
+
+-- Fechar
+CloseButton.MouseButton1Click:Connect(function()
+	MainFrame.Visible = false
+	OpenButton.Visible = true
+end)
+
+-- Abrir
+OpenButton.MouseButton1Click:Connect(function()
+	MainFrame.Visible = true
+	OpenButton.Visible = false
+end)
+
+-- Auto Kill Toggle
+AutoKillButton.MouseButton1Click:Connect(function()
+	autoKillAll = not autoKillAll
+	AutoKillButton.Text = "Auto Kill All (" .. (autoKillAll and "ON" or "OFF") .. ")"
+	if autoKillAll then
+		hitboxSize = 500
+		ValueLabel.Text = "Tamanho: " .. hitboxSize
+		aplicarHitbox(hitboxSize)
+	end
+end)
+
+-- Auto Clicker Toggle
+AutoClickerButton.MouseButton1Click:Connect(function()
+	autoClickerEnabled = not autoClickerEnabled
+	if autoClickerEnabled then
+		AutoClickerButton.Text = "Desativar Auto Clicker"
+		AutoClickerButton.BackgroundColor3 = Color3.fromRGB(250, 100, 100)
+	else
+		AutoClickerButton.Text = "Ativar Auto Clicker"
+		AutoClickerButton.BackgroundColor3 = Color3.fromRGB(80, 160, 250)
+	end
+end)
+
+-- FPS Boost Toggle
+FpsBoostButton.MouseButton1Click:Connect(function()
+	fpsBoost = not fpsBoost
+	FpsBoostButton.Text = "FPS Boost (" .. (fpsBoost and "ON" or "OFF") .. ")"
+	FpsBoostButton.BackgroundColor3 = fpsBoost and Color3.fromRGB(0, 200, 255) or Color3.fromRGB(150, 150, 150)
+	aplicarHitbox(hitboxSize)
+end)
+
+-- Atualizar hitbox a cada 3 segundos
+while true do
+	aplicarHitbox(hitboxSize)
+	wait(3)
+end
+]])()
