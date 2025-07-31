@@ -294,3 +294,16 @@ btnNoclip.MouseButton1Click:Connect(function()
 		end
 	end
 end)
+
+-- Botão que executa AutoKillPlayers.lua
+local btnAutoKill = criarBotao("Auto Kill Players", Color3.fromRGB(255, 80, 80)) -- Botão vermelho claro
+
+btnAutoKill.MouseButton1Click:Connect(function()
+    local sucesso, erro = pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/RodrigoBlox/Meu-hub/main/AutoKillPlayers.lua"))()
+    end)
+
+    if not sucesso then
+        warn("Erro ao executar AutoKillPlayers.lua: " .. tostring(erro))
+    end
+end)
