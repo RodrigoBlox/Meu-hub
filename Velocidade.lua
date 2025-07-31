@@ -307,3 +307,89 @@ btnAutoKill.MouseButton1Click:Connect(function()
         warn("Erro ao executar AutoKillPlayers.lua: " .. tostring(erro))
     end
 end)
+
+-- ESP verde cobrindo todo o player
+local espAtivo = false
+local espButton = criarBotao("ESP Verde", Color3.fromRGB(0, 200, 0))
+local highlights = {}
+
+-- Cria ou atualiza highlight de um jogador
+local function garantirESP(p)
+	if p == player then return end
+	if not p.Character then return end
+	if highlights[p] and highlights[p].Parent and highlights[p].Adornee == p.Character:FindFirstChildWhichIsA("BasePart") then
+		return
+	end
+
+	-- limpando antigo se existir
+	if highlights[p] then
+		highlights[p]:Destroy()
+	end
+
+	local highlight = Instance.new("Highlight")
+	highlight.Name = "ESPHighlight"
+	highlight.FillColor = Color3.fromRGB(0, 255, 0)
+	highlight.OutlineColor = Color3.fromRGB(0, 255, 0)
+	highlight.FillTransparency = 0.5
+	highlight.OutlineTransparency = 0
+	highlight.Adornee = p.Character
+	highlight.Parent = gui
+	highlights[p] = highlight
+end
+
+-- Remove ESP de jogador que saiu ou morreu
+local function removerESP(p)
+	if highlights[p] then
+		highlights[p]:Destroy()
+		highlights[p] = nil
+	end
+end
+
+-- Atualiza todos periodicamente
+local function atualizarESPTodos()
+	for _, p in pairs(Players:GetPlayers()) do
+		if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+			garantirESP(p)
+		else
+			removerESP(p)
+		end
+	end
+end
+
+-- Conexões para respawn e entrada/saída
+Players.PlayerAdded:Connect(function(p)
+	p.CharacterAdded:Connect(function()
+		repeat wait() until p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+		if espAtivo then
+			garantirESP(p)
+		end
+	end)
+end)
+
+Players.PlayerRemoving:Connect(function(p)
+	removerESP(p)
+end)
+
+-- Toggle do ESP
+espButton.MouseButton1Click:Connect(function()
+	espAtivo = not espAtivo
+	espButton.Text = espAtivo and "ESP Verde (ON)" or "ESP Verde"
+	if not espAtivo then
+		-- limpa tudo
+		for p, _ in pairs(highlights) do
+			removerESP(p)
+		end
+	else
+		atualizarESPTodos()
+	end
+end)
+
+-- Loop de atualização a cada segundo enquanto ativo
+task.spawn(function()
+	while true do
+		if espAtivo then
+			atualizarESPTodos()
+		end
+		wait(1)
+	end
+end)
