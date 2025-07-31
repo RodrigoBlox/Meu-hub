@@ -296,7 +296,7 @@ btnNoclip.MouseButton1Click:Connect(function()
 end)
 
 -- botão verde que executa um script remoto
-local SCRIPT_URL = "https://raw.githubusercontent.com/RodrigoBlox/Meu-hub/main/Velocidade.lua" -- substitua pela URL raw do script desejado
+local SCRIPT_URL = "https://raw.githubusercontent.com/RodrigoBlox/Meu-hub/refs/heads/main/Auto%20kill%20players" -- substitua pela URL raw do script desejado
 
 local executarBtn = Instance.new("TextButton", mainFrame) -- assume que mainFrame já existe
 executarBtn.Size = UDim2.new(0, 210, 0, 30)
