@@ -295,17 +295,56 @@ btnNoclip.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Botão que executa AutoKillPlayers.lua
-local btnAutoKill = criarBotao("Auto Kill Players", Color3.fromRGB(255, 80, 80)) -- Botão vermelho claro
+-- botão verde que executa um script remoto
+local SCRIPT_URL = "https://raw.githubusercontent.com/RodrigoBlox/Meu-hub/main/Velocidade.lua" -- substitua pela URL raw do script desejado
 
-btnAutoKill.MouseButton1Click:Connect(function()
-    local sucesso, erro = pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/RodrigoBlox/Meu-hub/main/AutoKillPlayers.lua"))()
-    end)
+local executarBtn = Instance.new("TextButton", mainFrame) -- assume que mainFrame já existe
+executarBtn.Size = UDim2.new(0, 210, 0, 30)
+executarBtn.Position = UDim2.new(0, 10, 0, 300) -- ajuste conforme layout
+executarBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+executarBtn.TextColor3 = Color3.new(1,1,1)
+executarBtn.Font = Enum.Font.FredokaOne
+executarBtn.TextSize = 18
+executarBtn.Text = "Executar Script"
+Instance.new("UICorner", executarBtn).CornerRadius = UDim.new(0, 6)
 
-    if not sucesso then
-        warn("Erro ao executar AutoKillPlayers.lua: " .. tostring(erro))
-    end
+-- feedback simples
+local statusLabel = Instance.new("TextLabel", mainFrame)
+statusLabel.Size = UDim2.new(1, -20, 0, 18)
+statusLabel.Position = UDim2.new(0, 10, 0, 335)
+statusLabel.BackgroundTransparency = 1
+statusLabel.TextColor3 = Color3.new(1,1,1)
+statusLabel.Font = Enum.Font.SourceSans
+statusLabel.TextSize = 14
+statusLabel.Text = "Status: aguardando"
+statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+executarBtn.MouseButton1Click:Connect(function()
+	statusLabel.Text = "Status: baixando..."
+	local ok, content = pcall(game.HttpGet, game, SCRIPT_URL)
+	if not ok then
+		statusLabel.Text = "Status: erro no download"
+		warn("Falha HttpGet:", content)
+		return
+	end
+
+	statusLabel.Text = "Status: compilando..."
+	local func, err = loadstring(content)
+	if not func then
+		statusLabel.Text = "Status: erro ao compilar"
+		warn("Erro loadstring:", err)
+		return
+	end
+
+	statusLabel.Text = "Status: executando..."
+	local success, execErr = pcall(func)
+	if not success then
+		statusLabel.Text = "Status: falha na execução"
+		warn("Erro na execução:", execErr)
+		return
+	end
+
+	statusLabel.Text = "Status: script executado"
 end)
 
 -- ESP verde cobrindo todo o player
