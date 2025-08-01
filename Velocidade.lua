@@ -151,45 +151,6 @@ btnFlyGui.MouseButton1Click:Connect(function()
     end
 end)
 
--- Velocidade
-local btnSpeed = criarBotao("Velocidade X2")
-local speedNormal = 16
-local speedFast = 32
-local usandoSpeed = false
-btnSpeed.MouseButton1Click:Connect(function()
-	usandoSpeed = not usandoSpeed
-	humanoid.WalkSpeed = usandoSpeed and speedFast or speedNormal
-	btnSpeed.Text = usandoSpeed and "Velocidade Normal" or "Velocidade X2"
-end)
-
--- Pulo Duplo
-local btnPulo = criarBotao("Pulo Duplo")
-local pulos = 0
-local maxPulos = 2
-local ativadoPulo = false
-btnPulo.MouseButton1Click:Connect(function()
-	if ativadoPulo then return end
-	ativadoPulo = true
-	humanoid.UseJumpPower = true
-	humanoid.JumpPower = 50
-
-	humanoid.StateChanged:Connect(function(_, state)
-		if state == Enum.HumanoidStateType.Landed then
-			pulos = 0
-		end
-	end)
-
-	UIS.JumpRequest:Connect(function()
-		if pulos < maxPulos then
-			humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-			pulos += 1
-		end
-	end)
-
-	btnPulo.Text = "Pulo Duplo Ativado"
-	btnPulo.AutoButtonColor = false
-end)
-
 -- ESP Verde original removido (substituído abaixo)
 
 -- Invisibilidade
