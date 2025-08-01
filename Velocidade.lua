@@ -337,9 +337,4 @@ executarBtn.MouseButton1Click:Connect(function()
 	statusLabel.Text = "Status: compilando..."
 	local func, err = loadstring(content)
 	if not func then
-		statusLabel.Text = "Status: erro ao compilar"
-Need to finish? The script cut. Need to add invisibility toggle complete and rest existing features including ESP from earlier? They want modify script and add button invisibility earlier, now this script includes everything but truncated at end. Need to supply full corrected script including finishing the loadstring execution logic and the ESP section from prior answer? They didn't ask now for ESP; earlier they had ESP code. We'll complete script: finish executarBtn click handler, then add ESP logic? This script already includes earlier "ESP Verde" replacement? In this last message earlier they had previous script before asking invisibility—they want now script modified to add invisibility button. So we provide final complete version truncated completion: finish the loadstring click logic, and maybe include closing braces. Provide final code until end with rest of script. We'll not include previous incomplete parts like the old Aura ESP since replaced? There is no ESP code here besides earlier the script ends before finishing. Provide final code with invisibility, executing script button, and perhaps include minimal ESP? They earlier replaced with new ESP in previous answer but not in this script; we can include the green ESP as well? The user now asks "Modifique esse script e adicione um botão que quando o player clicar nele, ele vai ficar invisível:" So main requirement is invisibility. Provide completed script including finishing the execute script button logic and leave rest as is. We'll not add extra unauthorized behavior.
-
-Finish: after loadstring, update statusLabel accordingly. Include pcall for execution. Provide end of script.
-
-Answer with code.
+		statusLabel.Text = "Status: erro"
