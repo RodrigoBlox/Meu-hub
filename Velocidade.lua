@@ -151,7 +151,90 @@ btnFlyGui.MouseButton1Click:Connect(function()
     end
 end)
 
--- ESP Verde original removido (substituído abaixo)
+-- ESP verde cobrindo todo o player (reimplementado)
+local espAtivo = false
+local espButton = criarBotao("ESP Verde", Color3.fromRGB(0, 200, 0))
+local highlights = {}
+
+-- Garante highlight para o jogador
+local function garantirESP(p)
+	if p == player then return end
+	if not p.Character then return end
+	if highlights[p] and highlights[p].Parent and highlights[p].Adornee == p.Character then
+		return
+	end
+
+	-- Remove antigo se existir
+	if highlights[p] then
+		highlights[p]:Destroy()
+	end
+
+	local highlight = Instance.new("Highlight")
+	highlight.Name = "ESPHighlight"
+	highlight.FillColor = Color3.fromRGB(0, 255, 0)
+	highlight.OutlineColor = Color3.fromRGB(0, 255, 0)
+	highlight.FillTransparency = 0.5
+	highlight.OutlineTransparency = 0
+	highlight.Adornee = p.Character
+	highlight.Parent = gui
+	highlights[p] = highlight
+end
+
+-- Remove ESP de um player
+local function removerESP(p)
+	if highlights[p] then
+		highlights[p]:Destroy()
+		highlights[p] = nil
+	end
+end
+
+-- Atualiza todos os jogadores
+local function atualizarESPTodos()
+	for _, p in pairs(Players:GetPlayers()) do
+		if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+			garantirESP(p)
+		else
+			removerESP(p)
+		end
+	end
+end
+
+-- Conexões para respawn/entrada/saída
+Players.PlayerAdded:Connect(function(p)
+	p.CharacterAdded:Connect(function()
+		repeat wait() until p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+		if espAtivo then
+			garantirESP(p)
+		end
+	end)
+end)
+
+Players.PlayerRemoving:Connect(function(p)
+	removerESP(p)
+end)
+
+-- Toggle do ESP
+espButton.MouseButton1Click:Connect(function()
+	espAtivo = not espAtivo
+	espButton.Text = espAtivo and "ESP Verde (ON)" or "ESP Verde"
+	if not espAtivo then
+		for p in pairs(highlights) do
+			removerESP(p)
+		end
+	else
+		atualizarESPTodos()
+	end
+end)
+
+-- Loop para manter atualizado
+task.spawn(function()
+	while true do
+		if espAtivo then
+			atualizarESPTodos()
+		end
+		wait(1)
+	end
+end)
 
 -- Invisibilidade
 local btnInvisivel = criarBotao("Invisível", Color3.fromRGB(0, 200, 0))
